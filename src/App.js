@@ -1,25 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
-
+//import logo from './logo.svg';
+import React, { useState } from 'react';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+ 
+const clientId = "647061106071-capap0cekss8o64mn6m5sc50j6ephee7.apps.googleusercontent.com";
+ 
 function App() {
+ 
+  const [loading, setLoading] = useState('Loading...');
+  const [user, setUser] = useState(null);
+ 
+  const handleLoginSuccess = (response) => {
+    console.log("Login Success ", response);
+    setUser(response.profileObj);
+    setLoading();
+  }
+ 
+  const handleLoginFailure = error => {
+    console.log("Login Failure ", error);
+    setLoading();
+  }
+ 
+  const handleLogoutSuccess = (response) => {
+    console.log("Logout Success ", response);
+    setUser(null);
+  }
+ 
+  const handleLogoutFailure = error => {
+    console.log("Logout Failure ", error);
+  }
+ 
+  const handleRequest = () => {
+    setLoading("Loading...");
+  }
+ 
+  const handleAutoLoadFinished = () => {
+    setLoading();
+  }
+ 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h3>Login with Google using React </h3>
+      {user ? <div>
+        <div className="name">Welcome {user.name}!</div>
+        <GoogleLogout
+          clientId={clientId}
+          onLogoutSuccess={handleLogoutSuccess}
+          onFailure={handleLogoutFailure}
+        />
+        <pre>{JSON.stringify(user, null, 2)}</pre>
+      </div> :
+        <GoogleLogin
+          clientId={clientId}
+          buttonText={loading}
+          onSuccess={handleLoginSuccess}
+          onFailure={handleLoginFailure}
+          onRequest={handleRequest}
+          onAutoLoadFinished={handleAutoLoadFinished}
+          isSignedIn={true}
+        />}
     </div>
   );
 }
-
+ 
 export default App;
